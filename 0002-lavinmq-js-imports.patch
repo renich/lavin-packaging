@@ -1,0 +1,13 @@
+--- chartjs-adapter-luxon.esm.js	2025-12-11 12:33:42.606078288 -0600
++++ chartjs-adapter-luxon.esm.js.new	2025-12-11 12:33:42.613582956 -0600
+@@ -4,8 +4,8 @@
+  * (c) 2023 chartjs-adapter-luxon Contributors
+  * Released under the MIT license
+  */
+-import { _adapters } from 'chart.js';
+-import { DateTime } from 'luxon';
++import { _adapters } from './chart.js'
++import { DateTime } from './luxon.js'
+
+ const FORMATS = {
+   datetime: DateTime.DATETIME_MED_WITH_SECONDS,

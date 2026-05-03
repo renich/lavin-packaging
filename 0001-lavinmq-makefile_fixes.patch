@@ -1,0 +1,14 @@
+--- a/Makefile.orig	2025-12-11 12:54:04.777248542 -0600
++++ b/Makefile	2025-12-11 12:54:21.279616248 -0600
+@@ -146,10 +146,6 @@
+ 	install -D -m 0644 -t $(DESTDIR)$(MANDIR)/man1 $(MANPAGES)
+ 	install -D -m 0644 extras/lavinmq.ini $(DESTDIR)$(SYSCONFDIR)/lavinmq/lavinmq.ini
+ 	install -D -m 0644 extras/lavinmq.service $(DESTDIR)$(UNITDIR)/lavinmq.service
+-	install -D -m 0644 -t $(DESTDIR)$(DOCDIR)/lavinmq README.md NOTICE
+-	install -D -m 0644 CHANGELOG.md $(DESTDIR)$(DOCDIR)/lavinmq/changelog
+-	getent passwd lavinmq >/dev/null || useradd --system --user-group --home $(SHAREDSTATEDIR)/lavinmq lavinmq
+-	install -d -m 0750 -o lavinmq -g lavinmq $(DESTDIR)$(SHAREDSTATEDIR)/lavinmq
+
+ .PHONY: uninstall
+ uninstall:
+

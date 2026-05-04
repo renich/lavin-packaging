@@ -35,6 +35,9 @@ Patch0: 0001-lavinmq-makefile_fixes.patch
 # Fix JS imports (applied to Source3)
 Patch1: 0002-lavinmq-js-imports.patch
 
+# Remove --error-on-warnings from Makefile to support newer Crystal versions
+Patch2: 0003-lavinmq-remove-error-on-warnings.patch
+
 
 # Required for forge macros
 BuildRequires: forge-srpm-macros
@@ -70,9 +73,7 @@ A resource efficient message queue server implementing the AMQP protocol.
 
 # Apply the Makefile patch
 %patch -p 1 -P 0
-
-# Remove --error-on-warnings from Makefile to support newer Crystal versions
-sed -i 's/--error-on-warnings//' Makefile
+%patch -p 1 -P 2
 
 # Create target directories
 mkdir -p static/js/lib/chunks

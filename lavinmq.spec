@@ -27,6 +27,9 @@ Source4: https://unpkg.com/@stoplight/elements@8.2.0/styles.min.css
 ## Note: This one is installed as elements-8.2.0.js
 Source5: https://unpkg.com/@stoplight/elements@8.2.0/web-components.min.js
 
+# Rootless user systemd unit
+Source6: lavinmq-user.service
+
 
 # Prevent Makefile from installing docs (handled by %%doc)
 Patch0: 0001-lavinmq-makefile_fixes.patch
@@ -38,7 +41,7 @@ Patch1: 0002-lavinmq-js-imports.patch
 # Required for forge macros
 BuildRequires: forge-srpm-macros
 
-# systemd (sysusers)
+# systemd (sysusers and user units)
 BuildRequires: systemd-rpm-macros
 
 # Building
@@ -96,6 +99,9 @@ cp %{SOURCE5} static/js/lib/elements-8.2.0.js
 %install
 %make_install UNITDIR=%{_unitdir} SYSUSERSDIR=%{_sysusersdir}
 
+# Install user service unit
+install -Dpm 0644 %{SOURCE6} %{buildroot}%{_userunitdir}/%{name}.service
+
 # Create the data directory
 install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}
 
@@ -113,14 +119,17 @@ make test
 
 %post
 %systemd_post %{name}.service
+%systemd_user_post %{name}.service
 
 
 %preun
 %systemd_preun %{name}.service
+%systemd_user_preun %{name}.service
 
 
 %postun
 %systemd_postun_with_restart %{name}.service
+%systemd_user_postun_with_restart %{name}.service
 
 
 %files
@@ -136,6 +145,7 @@ make test
 %{_mandir}/man1/%{name}perf.1*
 %{_sysusersdir}/%{name}.conf
 %{_unitdir}/%{name}.service
+%{_userunitdir}/%{name}.service
 
 
 %changelog

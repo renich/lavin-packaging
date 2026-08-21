@@ -1,0 +1,21 @@
+[Unit]
+Description=LavinMQ Message Broker (User Service)
+Documentation=https://github.com/cloudamqp/lavinmq https://lavinmq.com/docs
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+ExecStart=/usr/bin/lavinmq
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+Type=notify
+LimitNOFILE=65536
+ProtectSystem=full
+NoNewPrivileges=true
+TimeoutStartSec=300
+Environment="GC_UNMAP_THRESHOLD=1"
+Environment="CRYSTAL_LOAD_DEBUG_INFO=1"
+
+[Install]
+WantedBy=default.target

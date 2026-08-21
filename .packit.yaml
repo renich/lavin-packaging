@@ -1,0 +1,26 @@
+# Packit configuration for automated upstream release tracking & Copr builds
+# Documentation: https://packit.dev/docs/configuration/
+
+specfile_path: lavinmq.spec
+upstream_project_url: https://github.com/cloudamqp/lavinmq
+upstream_package_name: lavinmq
+downstream_package_name: lavinmq
+
+# Automated jobs triggered on upstream release
+jobs:
+  - job: copr_build
+    trigger: release
+    owner: renich
+    project: lavinmq
+    targets:
+      - fedora-rawhide-x86_64
+      - fedora-rawhide-aarch64
+      - fedora-44-x86_64
+      - fedora-44-aarch64
+      - fedora-43-x86_64
+      - fedora-43-aarch64
+      - centos-stream-10-x86_64
+      - centos-stream-10-aarch64
+
+  - job: pull_from_upstream
+    trigger: release

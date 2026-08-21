@@ -108,9 +108,13 @@ install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}
 
 
 %check
-# Clustering tests require a running etcd cluster and systemd socket access,
-# which are not reliably available in the build environment.
-rm -f spec/clustering_spec.cr
+# Unset NOTIFY_SOCKET so reload tests inside container environments don't attempt
+# to send datagrams to the host's protected /run/host/notify socket.
+unset NOTIFY_SOCKET || true
+
+# Clustering and port-binding tests require running daemons / fixed ports
+# that are not reliably available in isolated container buildroots.
+rm -f spec/clustering_spec.cr spec/launcher_bind_spec.cr
 
 # Run tests if possible. Adjust based on actual test command.
 %if 0%{?fedora} && 0%{?fedora} < 45

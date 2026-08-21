@@ -23,15 +23,31 @@ making it a lightweight alternative to heavier message brokers.
 * **Automated Packaging**: Maintained with continuous Copr builds and Packit
   upstream release tracking.
 
-## Comparison
+## Comparison with Alternative Brokers
 
-| Feature | LavinMQ | RabbitMQ | ActiveMQ |
-| :--- | :--- | :--- | :--- |
-| Runtime | Crystal | Erlang (BEAM) | Java (JVM) |
-| Memory | ~20–50 MB | 200–500+ MB | 300–800+ MB |
-| Protocol | AMQP 0-9-1 | AMQP, STOMP | AMQP, JMS |
-| Storage | Disk mfile | Mnesia / Khepri | KahaDB |
-| Standalone | Single binary | Erlang runtime | JVM runtime |
+### LavinMQ
+
+* **Runtime**: Crystal (native compiled binary).
+* **Memory Footprint**: ~20–50 MB RAM under active load.
+* **Protocols**: AMQP 0-9-1, MQTT.
+* **Storage Engine**: Disk-backed mfile log streaming.
+* **Deployment**: Single standalone binary without runtime dependencies.
+
+### RabbitMQ
+
+* **Runtime**: Erlang (BEAM VM).
+* **Memory Footprint**: 200–500+ MB RAM baseline.
+* **Protocols**: AMQP 0-9-1, STOMP, MQTT.
+* **Storage Engine**: Mnesia / Khepri metadata.
+* **Deployment**: Requires Erlang/OTP runtime environment.
+
+### ActiveMQ
+
+* **Runtime**: Java (JVM).
+* **Memory Footprint**: 300–800+ MB RAM baseline.
+* **Protocols**: AMQP, JMS, OpenWire, STOMP.
+* **Storage Engine**: KahaDB message store.
+* **Deployment**: Requires Java Runtime Environment (JRE).
 
 ## Target Distributions
 

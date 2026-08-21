@@ -55,6 +55,7 @@ BuildRequires: shards
 # Other
 BuildRequires: lz4-devel
 BuildRequires: openssl-devel
+BuildRequires: zlib-devel
 
 # Documentation
 BuildRequires: help2man

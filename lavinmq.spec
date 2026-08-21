@@ -1,5 +1,5 @@
 %global forgeurl https://github.com/cloudamqp/lavinmq
-Version:        2.6.1
+Version:        2.9.2
 %forgemeta
 
 Name: lavinmq
@@ -11,32 +11,28 @@ License: Apache-2.0
 
 # Sources
 Source0: %forgesource
-Source1: lavinmq.sysusers
 
 # Note: We need two files from this (chart.js and helpers.segment.js)
-Source2: https://github.com/chartjs/Chart.js/releases/download/v4.0.1/chart.js-4.0.1.tgz
+Source1: https://github.com/chartjs/Chart.js/releases/download/v4.0.1/chart.js-4.0.1.tgz
 
 ## additional ones
-Source3: https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.esm.js
+Source2: https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.esm.js
 
 ## Note: This one is installed as luxon.js
-Source4: https://moment.github.io/luxon/es6/luxon.mjs
+Source3: https://moment.github.io/luxon/es6/luxon.mjs
 
 ## Note: This one is installed as elements-8.2.0.css
-Source5: https://unpkg.com/@stoplight/elements@8.2.0/styles.min.css
+Source4: https://unpkg.com/@stoplight/elements@8.2.0/styles.min.css
 
 ## Note: This one is installed as elements-8.2.0.js
-Source6: https://unpkg.com/@stoplight/elements@8.2.0/web-components.min.js
+Source5: https://unpkg.com/@stoplight/elements@8.2.0/web-components.min.js
 
 
-# Prevent Makefile from creating users (handled by sysusers.d) and installing docs (handled by %doc)
+# Prevent Makefile from installing docs (handled by %%doc)
 Patch0: 0001-lavinmq-makefile_fixes.patch
 
-# Fix JS imports (applied to Source3)
+# Fix JS imports (applied to Source2)
 Patch1: 0002-lavinmq-js-imports.patch
-
-# Remove --error-on-warnings from Makefile to support newer Crystal versions
-Patch2: 0003-lavinmq-remove-error-on-warnings.patch
 
 
 # Required for forge macros
@@ -61,7 +57,7 @@ BuildRequires: openssl-devel
 BuildRequires: help2man
 
 # Testing
-%if 0%{?fedora} < 45
+%if 0%{?fedora} && 0%{?fedora} < 45
 BuildRequires: etcd
 %endif
 %description
@@ -73,21 +69,20 @@ A resource efficient message queue server implementing the AMQP protocol.
 
 # Apply the Makefile patch
 %patch -p 1 -P 0
-%patch -p 1 -P 2
 
 # Create target directories
 mkdir -p static/js/lib/chunks
 
 # Extract and put the files in place
-tar -zxOf %{SOURCE2} package/dist/chart.js > static/js/lib/chart.js
-tar -zxOf %{SOURCE2} package/dist/chunks/helpers.segment.js > static/js/lib/chunks/helpers.segment.js
+tar -zxOf %{SOURCE1} package/dist/chart.js > static/js/lib/chart.js
+tar -zxOf %{SOURCE1} package/dist/chunks/helpers.segment.js > static/js/lib/chunks/helpers.segment.js
 
-cp %{SOURCE3} static/js/lib/chartjs-adapter-luxon.esm.js
+cp %{SOURCE2} static/js/lib/chartjs-adapter-luxon.esm.js
 patch -p0 static/js/lib/chartjs-adapter-luxon.esm.js < %{PATCH1}
 
-cp %{SOURCE4} static/js/lib/luxon.js
-cp %{SOURCE5} static/js/lib/elements-8.2.0.css
-cp %{SOURCE6} static/js/lib/elements-8.2.0.js
+cp %{SOURCE3} static/js/lib/luxon.js
+cp %{SOURCE4} static/js/lib/elements-8.2.0.css
+cp %{SOURCE5} static/js/lib/elements-8.2.0.js
 
 
 # TODO: we need to move this one to a networkless procedure
@@ -99,10 +94,7 @@ cp %{SOURCE6} static/js/lib/elements-8.2.0.js
 
 
 %install
-%make_install UNITDIR=%{_unitdir}
-
-# Install sysusers config
-install -D -p -m 0644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}.conf
+%make_install UNITDIR=%{_unitdir} SYSUSERSDIR=%{_sysusersdir}
 
 # Create the data directory
 install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}
@@ -114,7 +106,7 @@ install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}
 rm -f spec/clustering_spec.cr
 
 # Run tests if possible. Adjust based on actual test command.
-%if 0%{?fedora} < 45
+%if 0%{?fedora} && 0%{?fedora} < 45
 make test
 %endif
 

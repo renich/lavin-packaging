@@ -1,6 +1,45 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -127,7 +127,6 @@
+@@ -13,7 +13,7 @@
+ .DEFAULT_GOAL := all
+ 
+ .PHONY: all
+-all: $(BINS)
++all: $(BINS) $(MANPAGES)
+ 
+ bin/%: src/%.cr $(SOURCES) lib $(JS) $(DOCS) | bin
+ 	crystal build $< -o $@ $(CRYSTAL_FLAGS)
+@@ -27,10 +27,10 @@
+ bin/lavinmq-debug: src/lavinmq.cr $(SOURCES) $(VIEW_TARGETS) lib $(JS) $(DOCS) | bin
+ 	crystal build $< -o $@ --debug $(CRYSTAL_FLAGS)
+ 
+-bin/lavinmqctl: src/lavinmqctl.cr $(CTL_SOURCES) lib | bin
++bin/lavinmqctl: src/lavinmqctl.cr $(CTL_SOURCES) lib | bin bin/lavinmq
+ 	crystal build $< -o $@ -Dgc_none $(CRYSTAL_FLAGS)
+ 
+-bin/lavinmqperf: src/lavinmqperf.cr $(PERF_SOURCES) lib | bin
++bin/lavinmqperf: src/lavinmqperf.cr $(PERF_SOURCES) lib | bin bin/lavinmqctl
+ 	crystal build $< -o $@ $(CRYSTAL_FLAGS)
+ 
+ bin/stress: extras/stress.cr lib | bin
+@@ -86,13 +86,13 @@
+ 	[ "119784e23ffc39b6fa3fdb3df93f391f8250e8af141b78dfc3b6bed86079f93b *$@" = "$$(openssl dgst -sha256 -r $@)" ]
+ 
+ man1/lavinmq.1: bin/lavinmq | man1
+-	help2man -Nn "fast and advanced message queue server" $< -o $@
++	help2man --no-discard-stderr -Nn "fast and advanced message queue server" $< -o $@
+ 
+ man1/lavinmqctl.1: bin/lavinmqctl | man1
+-	help2man -Nn "control utility for lavinmq server" $< -o $@
++	help2man --no-discard-stderr -Nn "control utility for lavinmq server" $< -o $@
+ 
+ man1/lavinmqperf.1: bin/lavinmqperf | man1
+-	help2man -Nn "performance testing tool for amqp servers" $< -o $@
++	help2man --no-discard-stderr -Nn "performance testing tool for amqp servers" $< -o $@
+ 
+ MANPAGES := man1/lavinmq.1 man1/lavinmqctl.1 man1/lavinmqperf.1
+ 
+@@ -134,7 +134,6 @@
  DESTDIR :=
  PREFIX := /usr
  BINDIR := $(PREFIX)/bin
@@ -8,7 +47,7 @@
  MANDIR := $(PREFIX)/share/man
  SYSCONFDIR := /etc
  UNITDIR := /lib/systemd/system
-@@ -141,8 +140,6 @@
+@@ -148,8 +147,6 @@
  	install -D -m 0644 extras/lavinmq.ini $(DESTDIR)$(SYSCONFDIR)/lavinmq/lavinmq.ini
  	install -D -m 0644 extras/lavinmq.service $(DESTDIR)$(UNITDIR)/lavinmq.service
  	install -D -m 0644 extras/lavinmq.sysusers $(DESTDIR)$(SYSUSERSDIR)/lavinmq.conf
@@ -17,7 +56,7 @@
  	install -d -m 0750 $(DESTDIR)$(SHAREDSTATEDIR)/lavinmq
  
  .PHONY: uninstall
-@@ -152,7 +149,6 @@
+@@ -159,7 +156,6 @@
  	$(RM) $(DESTDIR)$(SYSCONFDIR)/lavinmq/lavinmq.ini
  	$(RM) $(DESTDIR)$(UNITDIR)/lavinmq.service
  	$(RM) $(DESTDIR)$(SYSUSERSDIR)/lavinmq.conf

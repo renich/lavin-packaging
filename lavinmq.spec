@@ -91,6 +91,8 @@ cp %{SOURCE5} static/js/lib/elements-8.2.0.js
 
 # TODO: we need to move this one to a networkless procedure
 %build
+export CRYSTAL_CACHE_DIR="%{_builddir}/.crystal-cache"
+
 # Ensure Fedora build flags are respected if the upstream Makefile supports them.
 # If crystal ignores CFLAGS, that is often acceptable for non-C languages,
 # but we still use the macro for parallelism.

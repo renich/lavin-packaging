@@ -1,6 +1,16 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -13,7 +13,7 @@
+@@ -6,14 +6,16 @@
+ VIEW_TARGETS := $(patsubst views/%.shtml,static/%.html,$(VIEW_SOURCES))
+ VIEW_PARTIALS := $(wildcard views/partials/*.shtml)
+ JS := static/js/lib/chunks/helpers.segment.js static/js/lib/chart.js static/js/lib/luxon.js static/js/lib/chartjs-adapter-luxon.esm.js static/js/lib/elements-8.2.0.js static/js/lib/elements-8.2.0.css $(wildcard static/js/*.js)
+-CRYSTAL_FLAGS := --release
++CRYSTAL_FLAGS ?= -Drelease -O3
+ override CRYSTAL_FLAGS += --stats --link-flags="$(LDFLAGS)"
+ .DELETE_ON_ERROR:
+ 
++MANPAGES := man1/lavinmq.1 man1/lavinmqctl.1 man1/lavinmqperf.1
++
  .DEFAULT_GOAL := all
  
  .PHONY: all
@@ -9,7 +19,7 @@
  
  bin/%: src/%.cr $(SOURCES) lib $(JS) $(DOCS) | bin
  	crystal build $< -o $@ $(CRYSTAL_FLAGS)
-@@ -27,10 +27,10 @@
+@@ -27,10 +29,10 @@
  bin/lavinmq-debug: src/lavinmq.cr $(SOURCES) $(VIEW_TARGETS) lib $(JS) $(DOCS) | bin
  	crystal build $< -o $@ --debug $(CRYSTAL_FLAGS)
  
@@ -22,7 +32,7 @@
  	crystal build $< -o $@ $(CRYSTAL_FLAGS)
  
  bin/stress: extras/stress.cr lib | bin
-@@ -86,13 +86,13 @@
+@@ -86,15 +88,14 @@
  	[ "119784e23ffc39b6fa3fdb3df93f391f8250e8af141b78dfc3b6bed86079f93b *$@" = "$$(openssl dgst -sha256 -r $@)" ]
  
  man1/lavinmq.1: bin/lavinmq | man1
@@ -37,9 +47,11 @@
 -	help2man -Nn "performance testing tool for amqp servers" $< -o $@
 +	help2man --no-discard-stderr -Nn "performance testing tool for amqp servers" $< -o $@
  
- MANPAGES := man1/lavinmq.1 man1/lavinmqctl.1 man1/lavinmqperf.1
+-MANPAGES := man1/lavinmq.1 man1/lavinmqctl.1 man1/lavinmqperf.1
  
-@@ -134,7 +134,6 @@
+ .PHONY: man
+ man: $(MANPAGES)
+@@ -134,7 +135,6 @@
  DESTDIR :=
  PREFIX := /usr
  BINDIR := $(PREFIX)/bin
@@ -47,7 +59,7 @@
  MANDIR := $(PREFIX)/share/man
  SYSCONFDIR := /etc
  UNITDIR := /lib/systemd/system
-@@ -148,8 +147,6 @@
+@@ -148,8 +148,6 @@
  	install -D -m 0644 extras/lavinmq.ini $(DESTDIR)$(SYSCONFDIR)/lavinmq/lavinmq.ini
  	install -D -m 0644 extras/lavinmq.service $(DESTDIR)$(UNITDIR)/lavinmq.service
  	install -D -m 0644 extras/lavinmq.sysusers $(DESTDIR)$(SYSUSERSDIR)/lavinmq.conf
@@ -56,7 +68,7 @@
  	install -d -m 0750 $(DESTDIR)$(SHAREDSTATEDIR)/lavinmq
  
  .PHONY: uninstall
-@@ -159,7 +156,6 @@
+@@ -159,7 +157,6 @@
  	$(RM) $(DESTDIR)$(SYSCONFDIR)/lavinmq/lavinmq.ini
  	$(RM) $(DESTDIR)$(UNITDIR)/lavinmq.service
  	$(RM) $(DESTDIR)$(SYSUSERSDIR)/lavinmq.conf

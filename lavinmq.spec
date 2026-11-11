@@ -1,5 +1,5 @@
 %global forgeurl https://github.com/cloudamqp/lavinmq
-Version:        2.10.5
+Version:        2.10.6
 %forgemeta
 
 Name: lavinmq

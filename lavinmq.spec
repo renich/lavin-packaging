@@ -12,30 +12,21 @@ License: Apache-2.0
 # Sources
 Source0: %forgesource
 
-# Note: We need two files from this (chart.js and helpers.segment.js)
-Source1: https://github.com/chartjs/Chart.js/releases/download/v4.0.1/chart.js-4.0.1.tgz
-
-## additional ones
-Source2: https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.esm.js
-
-## Note: This one is installed as luxon.js
-Source3: https://moment.github.io/luxon/es6/luxon.mjs
+# Note: We need two files from this (uPlot.esm.js and uPlot.min.css)
+Source1: https://registry.npmjs.org/uplot/-/uplot-1.6.32.tgz
 
 ## Note: This one is installed as elements-8.2.0.css
-Source4: https://unpkg.com/@stoplight/elements@8.2.0/styles.min.css
+Source2: https://unpkg.com/@stoplight/elements@8.2.0/styles.min.css
 
 ## Note: This one is installed as elements-8.2.0.js
-Source5: https://unpkg.com/@stoplight/elements@8.2.0/web-components.min.js
+Source3: https://unpkg.com/@stoplight/elements@8.2.0/web-components.min.js
 
 # Rootless user systemd unit
-Source6: lavinmq-user.service
+Source4: lavinmq-user.service
 
 
 # Prevent Makefile from installing docs (handled by %%doc)
 Patch0: 0001-lavinmq-makefile_fixes.patch
-
-# Fix JS imports (applied to Source2)
-Patch1: 0002-lavinmq-js-imports.patch
 
 
 # Required for forge macros
@@ -75,18 +66,14 @@ A resource efficient message queue server implementing the AMQP protocol.
 %patch -p 1 -P 0
 
 # Create target directories
-mkdir -p static/js/lib/chunks
+mkdir -p static/js/lib
 
 # Extract and put the files in place
-tar -zxOf %{SOURCE1} package/dist/chart.js > static/js/lib/chart.js
-tar -zxOf %{SOURCE1} package/dist/chunks/helpers.segment.js > static/js/lib/chunks/helpers.segment.js
+tar -zxOf %{SOURCE1} package/dist/uPlot.esm.js > static/js/lib/uplot.esm.js
+tar -zxOf %{SOURCE1} package/dist/uPlot.min.css > static/js/lib/uplot.css
 
-cp %{SOURCE2} static/js/lib/chartjs-adapter-luxon.esm.js
-patch -p0 static/js/lib/chartjs-adapter-luxon.esm.js < %{PATCH1}
-
-cp %{SOURCE3} static/js/lib/luxon.js
-cp %{SOURCE4} static/js/lib/elements-8.2.0.css
-cp %{SOURCE5} static/js/lib/elements-8.2.0.js
+cp %{SOURCE2} static/js/lib/elements-8.2.0.css
+cp %{SOURCE3} static/js/lib/elements-8.2.0.js
 
 
 # TODO: we need to move this one to a networkless procedure
@@ -103,7 +90,7 @@ export CRYSTAL_CACHE_DIR="%{_builddir}/.crystal-cache"
 %make_install UNITDIR=%{_unitdir} SYSUSERSDIR=%{_sysusersdir}
 
 # Install user service unit
-install -Dpm 0644 %{SOURCE6} %{buildroot}%{_userunitdir}/%{name}.service
+install -Dpm 0644 %{SOURCE4} %{buildroot}%{_userunitdir}/%{name}.service
 
 # Create the data directory
 install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}

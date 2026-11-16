@@ -101,6 +101,15 @@ install -d -m 0750 %{buildroot}%{_sharedstatedir}/%{name}
 # to send datagrams to the host's protected /run/host/notify socket.
 unset NOTIFY_SOCKET || true
 
+# Raise soft file descriptor limit up to 65536 (capped by hard limit) so the
+# ~2,900-example spec suite does not exhaust the default 1024 container limit.
+hard_nofile=$(ulimit -Hn)
+if [ "$hard_nofile" = "unlimited" ] || [ "$hard_nofile" -gt 65536 ] 2>/dev/null; then
+    ulimit -Sn 65536 || true
+else
+    ulimit -Sn "$hard_nofile" || true
+fi
+
 # Clustering and port-binding tests require running daemons / fixed ports
 # that are not reliably available in isolated container buildroots.
 rm -f spec/clustering_spec.cr spec/launcher_bind_spec.cr

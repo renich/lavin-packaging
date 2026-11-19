@@ -114,9 +114,11 @@ fi
 # that are not reliably available in isolated container buildroots.
 rm -f spec/clustering_spec.cr spec/launcher_bind_spec.cr
 
-# Run tests if possible. Adjust based on actual test command.
+# Run tests (exclude etcd-tagged specs where etcd is unavailable: F45+, Rawhide, EL10)
 %if 0%{?fedora} && 0%{?fedora} < 45
 make test
+%else
+make test TAGS="~etcd"
 %endif
 
 
